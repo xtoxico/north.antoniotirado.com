@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { prisma } from '../prisma/prisma.service';
+import * as passport from 'passport';
+import { Request } from 'express';
 
 export interface AuthenticatedRequest extends Request {
     user?: {
@@ -8,21 +8,4 @@ export interface AuthenticatedRequest extends Request {
     };
 }
 
-export const authMiddleware = async (
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
-) => {
-    // Mock Auth: Hardcoded lookup for seed user
-    const user = await prisma.user.findUnique({
-        where: { email: 'test@antoniotirado.com' },
-    });
-
-    if (!user) {
-        res.status(401).json({ message: 'Mock user not found' });
-        return;
-    }
-
-    req.user = { id: user.id, email: user.email };
-    next();
-};
+export const authMiddleware = passport.authenticate('jwt', { session: false });

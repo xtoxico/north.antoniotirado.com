@@ -94,4 +94,21 @@ export class GoalFacade {
             }
         });
     }
+
+    createGoal(data: any): void {
+        this.isLoading.set(true);
+        this.goalApiService.createGoal(data).subscribe({
+            next: () => {
+                this.loadGoals();
+                this.isLoading.set(false);
+                // Ideally navigate here or emit success
+                window.location.href = '/'; // Simple redirect for now, consider Router later
+            },
+            error: (err) => {
+                console.error('Error creating goal', err);
+                this.error.set('Failed to create goal.');
+                this.isLoading.set(false);
+            }
+        });
+    }
 }

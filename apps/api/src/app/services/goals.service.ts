@@ -40,13 +40,24 @@ export class GoalsService {
     }
 
     async create(userId: string, data: CreateGoalDto): Promise<Goal> {
+        const { milestones, ...rest } = data;
+        
         const goal = await prisma.goal.create({
             data: {
-                ...data,
+                ...rest,
                 userId,
                 startDate: new Date(data.startDate),
                 targetDate: data.targetDate ? new Date(data.targetDate) : null,
+                milestones: milestones && milestones.length > 0 ? {
+                    create: milestones.map(title => ({
+                        title,
+                        isCompleted: false
+                    }))
+                } : undefined
             },
+            include: {
+                milestones: true
+            }
         });
         return goal as unknown as Goal;
     }

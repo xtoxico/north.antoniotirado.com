@@ -44,4 +44,5 @@ export interface CreateGoalDto {
     startDate: string; // ISO string on wire
     targetDate?: string; // ISO string on wire
     frequency?: any;
+    milestones?: string[];
 }

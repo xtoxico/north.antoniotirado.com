@@ -24,4 +24,8 @@ export class GoalApiService {
     updateMilestone(milestoneId: string, isCompleted: boolean): Observable<Milestone> {
         return this.http.patch<Milestone>(`/api/milestones/${milestoneId}`, { isCompleted });
     }
+
+    createGoal(data: any): Observable<Goal> {
+        return this.http.post<Goal>('/api/goals', data);
+    }
 }
