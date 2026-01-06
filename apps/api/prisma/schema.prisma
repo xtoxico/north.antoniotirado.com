@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum GoalType {
+  ELIMINATE_HABIT
+  BUILD_HABIT
+  ACHIEVEMENT
+}
+
+enum FrequencyType {
+  DAILY
+  WEEKLY
+  CUSTOM
+}
+
+// Models
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  googleId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  goals     Goal[]
+}
+
+model Goal {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  title       String
+  description String?
+  type        GoalType
+
+  // Configuration
+  startDate   DateTime
+  targetDate  DateTime? // For Achievements
+  frequency   Json?     // For Habit configuration { type: FrequencyType, days: [], interval: number }
+
+  // State / Stats
+  currentStreak    Int       @default(0)
+  longestStreak    Int       @default(0)
+  lastActivityDate DateTime?
+  totalActionCount Int       @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  entries    Entry[]
+  milestones Milestone[]
+}
+
+model Entry {
+  id        String   @id @default(uuid())
+  goalId    String
+  goal      Goal     @relation(fields: [goalId], references: [id])
+  
+  date      DateTime
+  notes     String?
+  
+  createdAt DateTime @default(now())
+}
+
+model Milestone {
+  id          String    @id @default(uuid())
+  goalId      String
+  goal        Goal      @relation(fields: [goalId], references: [id])
+  
+  title       String
+  isCompleted Boolean   @default(false)
+  completedAt DateTime?
+}
